@@ -1,0 +1,22 @@
+name: Docker Container Action
+on:
+  push:
+  workflow_dispatch:
+jobs:
+  docker-test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Build Docker image
+        run: docker build -t demo-container .
+      - name: Run container
+        run: docker run --name demo demo-container
+      - name: Monitor container resources
+        run: docker stats demo --no-stream
+      - name: Copy file from container
+        run: docker cp demo:/app/output.txt ./output.txt
+      - name: Upload artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: container-output
+          path: output.txt
